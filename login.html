@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Expert Chiffrage by PowerCity — Connexion</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --bg:#0a0f0a;--surface:#0f1a0f;--surface2:#111f11;
+    --border:rgba(80,160,60,0.12);
+    --green:#50a03c;--green-light:#8cc878;--green-dark:#2d5c22;
+    --grey:#3c3c3c;--text:#e2e8f0;--muted:#6b8f6b;--red:#ef4444;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+  /* BACKGROUND */
+  .bg-layer{position:fixed;inset:0;z-index:0}
+  .bg-layer::before{content:'';position:absolute;inset:0;background:
+    radial-gradient(ellipse 900px 700px at 0% 0%, rgba(80,160,60,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 700px 600px at 100% 100%, rgba(80,160,60,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 400px 400px at 50% 50%, rgba(44,92,34,0.05) 0%, transparent 70%)}
+  .bg-layer::after{content:'';position:absolute;inset:0;background:
+    repeating-linear-gradient(0deg,transparent,transparent 60px,rgba(80,160,60,0.018) 60px,rgba(80,160,60,0.018) 61px),
+    repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(80,160,60,0.018) 60px,rgba(80,160,60,0.018) 61px)}
+
+  /* SPLIT LAYOUT */
+  .login-wrap{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;min-height:100vh;width:100%}
+
+  /* LEFT PANEL */
+  .left-panel{background:linear-gradient(160deg,rgba(80,160,60,0.14) 0%,rgba(10,15,10,0.95) 60%);border-right:1px solid rgba(80,160,60,0.1);padding:60px 50px;display:flex;flex-direction:column;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:14px;margin-bottom:60px}
+  .brand-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 30px rgba(80,160,60,0.3)}
+  .brand-name{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff;line-height:1.1}
+  .brand-sub{font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+
+  .left-headline{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .left-headline h2{font-family:'Syne',sans-serif;font-size:clamp(28px,3.5vw,46px);font-weight:800;color:#fff;line-height:1.1;letter-spacing:-1.5px;margin-bottom:20px}
+  .left-headline h2 span{background:linear-gradient(90deg,var(--green),var(--green-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .left-headline p{font-size:15px;color:var(--muted);line-height:1.7;max-width:380px;margin-bottom:36px}
+
+  .features-list{display:flex;flex-direction:column;gap:14px}
+  .feat-item{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted)}
+  .feat-dot{width:28px;height:28px;border-radius:8px;background:rgba(80,160,60,0.1);border:1px solid rgba(80,160,60,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+
+  .left-footer{font-size:11px;color:#2d4a2d;margin-top:40px}
+
+  /* RIGHT PANEL — LOGIN FORM */
+  .right-panel{display:flex;align-items:center;justify-content:center;padding:40px}
+  .login-card{width:100%;max-width:420px}
+
+  .login-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:6px}
+  .login-sub{font-size:13px;color:var(--muted);margin-bottom:36px;line-height:1.5}
+
+  .form-group{margin-bottom:18px}
+  .form-label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+  .form-input{width:100%;padding:13px 16px;border-radius:11px;background:rgba(255,255,255,0.04);border:1px solid rgba(80,160,60,0.15);color:var(--text);font-size:14px;outline:none;font-family:'DM Sans',sans-serif;transition:all .2s}
+  .form-input:focus{border-color:rgba(80,160,60,0.45);background:rgba(80,160,60,0.04);box-shadow:0 0 0 3px rgba(80,160,60,0.08)}
+  .form-input::placeholder{color:#2d4a2d}
+
+  .btn-login{width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--green-light));border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .25s;margin-top:6px;box-shadow:0 8px 24px rgba(80,160,60,0.25);letter-spacing:.3px}
+  .btn-login:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(80,160,60,0.35)}
+  .btn-login:active{transform:translateY(0)}
+  .btn-login:disabled{background:#1a2e1a;color:#2d4a2d;cursor:not-allowed;box-shadow:none;transform:none}
+
+  .error-msg{background:rgba(239,68,68,0.09);border:1px solid rgba(239,68,68,0.22);border-radius:9px;padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:16px;display:none;align-items:center;gap:9px}
+  .error-msg.show{display:flex}
+
+  .divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:#1a2e1a;font-size:11px}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(80,160,60,0.08)}
+
+  .admin-link{display:block;text-align:center;font-size:12px;color:#2d4a2d;text-decoration:none;transition:color .2s;padding:8px}
+  .admin-link:hover{color:var(--green)}
+  .admin-link span{color:var(--green);font-weight:600}
+
+  .loading-dots{display:inline-flex;gap:4px;align-items:center}
+  .loading-dots span{width:5px;height:5px;border-radius:50%;background:#fff;animation:ld .8s ease-in-out infinite}
+  .loading-dots span:nth-child(2){animation-delay:.15s}
+  .loading-dots span:nth-child(3){animation-delay:.3s}
+  @keyframes ld{0%,80%,100%{transform:scale(0.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+  @media(max-width:768px){
+    .login-wrap{grid-template-columns:1fr}
+    .left-panel{display:none}
+    .right-panel{padding:30px 20px}
+  }
+</style>
+</head>
+<body>
+<div class="bg-layer"></div>
+
+<div class="login-wrap">
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div><div class="brand-name">EXPERT CHIFFRAGE</div><div class="brand-sub">BY POWERCITY</div></div>
+    </div>
+
+    <div class="left-headline">
+      <h2>Nomenclatures<br/>électriques<br/><span>en 30 secondes</span></h2>
+      <p>L'outil IA de chiffrage technique pour les professionnels de l'électricité au Maroc.</p>
+      <div class="features-list">
+        <div class="feat-item"><div class="feat-dot">🔢</div>Calibre, pôles, courbe, pouvoir de coupure</div>
+        <div class="feat-item"><div class="feat-dot">📸</div>Analyse de schémas unifilaires par IA</div>
+        <div class="feat-item"><div class="feat-dot">📄</div>Export PDF & Excel professionnel</div>
+        <div class="feat-item"><div class="feat-dot">🗂</div>Historique de toutes vos nomenclatures</div>
+      </div>
+    </div>
+
+    <div class="left-footer">© 2025 PowerCity — Global Energy Store · Casablanca, Maroc</div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+    <div class="login-card">
+      <div class="login-title">Connexion</div>
+      <div class="login-sub">Accédez à votre espace Expert Chiffrage</div>
+
+      <div class="error-msg" id="errorMsg">
+        <span>⚠</span><span id="errorText">Identifiant ou mot de passe incorrect.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Identifiant</label>
+        <input type="text" class="form-input" id="username" placeholder="votre identifiant" autocomplete="username" onkeydown="handleKey(event)"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <input type="password" class="form-input" id="password" placeholder="••••••••" autocomplete="current-password" onkeydown="handleKey(event)"/>
+      </div>
+
+      <button class="btn-login" id="loginBtn" onclick="doLogin()">Se connecter</button>
+
+      <div class="divider">accès administrateur</div>
+      <a href="admin.html" class="admin-link">Panneau admin PowerCity <span>→</span></a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CLIENTS DATABASE (stored in localStorage by admin) ─────────────────────
+// Format: { username: { password, nom, societe, actif } }
+
+function getClients(){
+  try{ return JSON.parse(localStorage.getItem('ec_clients')||'{}'); }
+  catch{ return {}; }
+}
+
+function handleKey(e){ if(e.key==='Enter') doLogin(); }
+
+function doLogin(){
+  const username = document.getElementById('username').value.trim().toLowerCase();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('loginBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const errorText = document.getElementById('errorText');
+
+  if(!username || !password){
+    errorText.textContent = 'Veuillez remplir tous les champs.';
+    errorMsg.classList.add('show'); return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+
+  setTimeout(()=>{
+    const clients = getClients();
+    const client = clients[username];
+
+    if(!client){
+      errorText.textContent = 'Identifiant inconnu.';
+      errorMsg.classList.add('show');
+      btn.disabled=false; btn.innerHTML='Se connecter'; return;
+    }
+    if(!client.actif){
+      errorText.textContent = 'Compte désactivé. Contactez PowerCity.';
+      errorMsg.classList.add('show');
+      btn.disabled=false; btn.innerHTML='Se connecter'; return;
+    }
+    if(client.password !== btoa(password)){
+      errorText.textContent = 'Mot de passe incorrect.';
+      errorMsg.classList.add('show');
+      btn.disabled=false; btn.innerHTML='Se connecter'; return;
+    }
+
+    // SUCCESS — save session
+    sessionStorage.setItem('ec_session', JSON.stringify({
+      username, nom: client.nom, societe: client.societe,
+      loginAt: new Date().toISOString()
+    }));
+
+    errorMsg.classList.remove('show');
+    btn.innerHTML = '✓ Connexion réussie !';
+    btn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+    setTimeout(()=>{ window.location.href = 'app.html'; }, 600);
+  }, 800);
+}
+
+// Check if already logged in
+if(sessionStorage.getItem('ec_session')){
+  window.location.href = 'app.html';
+}
+</script>
+</body>
+</html>

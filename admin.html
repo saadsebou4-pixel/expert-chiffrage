@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — Expert Chiffrage PowerCity</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --bg:#0a0f0a;--surface:#0f1a0f;--surface2:#111f11;
+    --border:rgba(80,160,60,0.12);
+    --green:#50a03c;--green-light:#8cc878;
+    --text:#e2e8f0;--muted:#6b8f6b;--red:#ef4444;--yellow:#f5c518;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 900px 600px at 10% 5%,rgba(80,160,60,0.1) 0%,transparent 60%),radial-gradient(ellipse 700px 500px at 90% 90%,rgba(80,160,60,0.07) 0%,transparent 60%);pointer-events:none;z-index:0}
+
+  /* ADMIN LOGIN */
+  .admin-login-wrap{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .admin-login-card{background:var(--surface);border:1px solid rgba(80,160,60,0.2);border-radius:20px;padding:36px;width:100%;max-width:380px}
+  .admin-login-card .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+  .brand-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:18px}
+  .al-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:5px}
+  .al-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+  .form-label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .form-input{width:100%;padding:12px 14px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(80,160,60,0.15);color:var(--text);font-size:13px;outline:none;font-family:'DM Sans',sans-serif;transition:all .2s;margin-bottom:14px}
+  .form-input:focus{border-color:rgba(80,160,60,0.4);background:rgba(80,160,60,0.04)}
+  .form-input::placeholder{color:#2d4a2d}
+  .btn-green{padding:12px 20px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green-light));border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;width:100%}
+  .btn-green:hover{opacity:.88}
+  .error-inline{font-size:12px;color:var(--red);margin-bottom:12px;display:none}
+  .error-inline.show{display:block}
+
+  /* ADMIN PANEL */
+  .admin-panel{display:none;position:relative;z-index:1}
+
+  /* TOPBAR */
+  .topbar{background:rgba(7,9,7,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  .topbar-brand{display:flex;align-items:center;gap:11px}
+  .topbar-title{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff}
+  .topbar-badge{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.25);color:var(--red);font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;letter-spacing:1px;text-transform:uppercase}
+  .topbar-logout{padding:7px 14px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+  .topbar-logout:hover{color:var(--red);border-color:rgba(239,68,68,0.2)}
+
+  /* CONTENT */
+  .content{max-width:1000px;margin:0 auto;padding:36px 32px}
+
+  /* STATS */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+  .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+  .stat-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff}
+  .stat-lbl{font-size:10px;color:var(--muted);margin-top:3px}
+
+  /* ADD CLIENT */
+  .section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:9px}
+  .add-card{background:var(--surface);border:1px solid rgba(80,160,60,0.15);border-radius:14px;padding:22px;margin-bottom:28px}
+  .add-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end}
+  .add-grid .form-input{margin-bottom:0}
+  .btn-add{padding:12px 18px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green-light));border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .2s;height:44px}
+  .btn-add:hover{opacity:.85;transform:translateY(-1px)}
+
+  /* CLIENTS TABLE */
+  .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .table-head{display:grid;grid-template-columns:1fr 1fr 1.4fr 90px 90px 100px;padding:10px 16px;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;gap:12px}
+  .client-row{display:grid;grid-template-columns:1fr 1fr 1.4fr 90px 90px 100px;padding:13px 16px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;gap:12px;transition:background .15s}
+  .client-row:last-child{border-bottom:none}
+  .client-row:hover{background:rgba(80,160,60,0.03)}
+  .client-name{font-weight:600;color:#fff;font-size:13px}
+  .client-societe{font-size:12px;color:var(--muted)}
+  .client-user{font-family:'DM Mono',monospace;font-size:11px;color:var(--green)}
+  .status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700}
+  .status-badge.actif{background:rgba(80,160,60,0.1);border:1px solid rgba(80,160,60,0.2);color:var(--green)}
+  .status-badge.inactif{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.18);color:var(--red)}
+  .row-actions{display:flex;gap:6px}
+  .btn-sm{padding:5px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;border:1px solid}
+  .btn-sm.toggle-on{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red)}
+  .btn-sm.toggle-off{background:rgba(80,160,60,0.08);border-color:rgba(80,160,60,0.2);color:var(--green)}
+  .btn-sm.del{background:rgba(100,116,139,0.06);border-color:rgba(100,116,139,0.15);color:#64748b}
+  .btn-sm.del:hover{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red)}
+  .btn-sm.pwd{background:rgba(245,197,24,0.07);border-color:rgba(245,197,24,0.18);color:var(--yellow)}
+  .client-date{font-size:10px;color:#334155}
+  .empty-table{text-align:center;padding:50px;color:var(--muted);font-size:13px}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--surface2);border:1px solid rgba(80,160,60,0.3);border-radius:10px;padding:11px 18px;font-size:13px;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,0.5);display:flex;align-items:center;gap:9px;animation:ti .3s ease}
+  @keyframes ti{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* MODAL */
+  .modal-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--surface);border:1px solid rgba(80,160,60,0.22);border-radius:16px;padding:26px;width:100%;max-width:360px}
+  .modal h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:14px}
+  .modal-btns{display:flex;gap:9px;margin-top:16px}
+  .btn-cancel{flex:1;padding:11px;border-radius:9px;cursor:pointer;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);font-weight:600;font-family:'DM Sans',sans-serif}
+  .btn-confirm{flex:1;padding:11px;border-radius:9px;cursor:pointer;background:linear-gradient(135deg,var(--green),var(--green-light));border:none;color:#fff;font-weight:700;font-family:'DM Sans',sans-serif}
+</style>
+</head>
+<body>
+
+<!-- ADMIN LOGIN -->
+<div class="admin-login-wrap" id="adminLoginWrap">
+  <div class="admin-login-card">
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff">EXPERT CHIFFRAGE</div>
+        <div style="font-size:9px;color:var(--green);letter-spacing:2px;text-transform:uppercase">ADMIN POWERCITY</div>
+      </div>
+    </div>
+    <div class="al-title">Panneau administrateur</div>
+    <div class="al-sub">Accès réservé à PowerCity — Gestion des clients</div>
+    <div class="error-inline" id="adminError">Mot de passe administrateur incorrect.</div>
+    <label class="form-label">Mot de passe admin</label>
+    <input type="password" class="form-input" id="adminPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()"/>
+    <button class="btn-green" onclick="adminLogin()">Accéder au panneau</button>
+    <div style="margin-top:14px;text-align:center"><a href="login.html" style="font-size:12px;color:#2d4a2d;text-decoration:none">← Retour à la connexion client</a></div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="adminPanel">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-icon" style="width:34px;height:34px;font-size:15px">⚡</div>
+      <div>
+        <div class="topbar-title">Expert Chiffrage — Admin</div>
+      </div>
+      <div class="topbar-badge">Admin</div>
+    </div>
+    <button class="topbar-logout" onclick="adminLogout()">Déconnexion</button>
+  </div>
+
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-box"><div class="stat-val" id="statTotal">0</div><div class="stat-lbl">Clients total</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--green)" id="statActif">0</div><div class="stat-lbl">Comptes actifs</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--red)" id="statInactif">0</div><div class="stat-lbl">Comptes inactifs</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--yellow)" id="statNew">0</div><div class="stat-lbl">Ajoutés ce mois</div></div>
+    </div>
+
+    <!-- ADD CLIENT -->
+    <div class="section-title">➕ Ajouter un client</div>
+    <div class="add-card">
+      <div class="add-grid">
+        <div>
+          <label class="form-label">Nom complet</label>
+          <input type="text" class="form-input" id="newNom" placeholder="Ahmed Benali"/>
+        </div>
+        <div>
+          <label class="form-label">Société</label>
+          <input type="text" class="form-input" id="newSociete" placeholder="Electro Maroc SARL"/>
+        </div>
+        <div>
+          <label class="form-label">Identifiant</label>
+          <input type="text" class="form-input" id="newUsername" placeholder="ahmed.benali" oninput="this.value=this.value.toLowerCase().replace(/\s/g,'')"/>
+        </div>
+        <div>
+          <label class="form-label">Mot de passe</label>
+          <input type="text" class="form-input" id="newPassword" placeholder="motdepasse123"/>
+        </div>
+        <button class="btn-add" onclick="addClient()">+ Créer</button>
+      </div>
+      <div style="font-size:11px;color:#2d4a2d;margin-top:10px">⚠ Communiquez l'identifiant et le mot de passe au client par WhatsApp ou email.</div>
+    </div>
+
+    <!-- CLIENTS LIST -->
+    <div class="section-title">👥 Clients enregistrés</div>
+    <div class="table-wrap">
+      <div class="table-head">
+        <span>Nom</span>
+        <span>Société</span>
+        <span>Identifiant</span>
+        <span>Statut</span>
+        <span>Créé le</span>
+        <span>Actions</span>
+      </div>
+      <div id="clientsList"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL RESET PASSWORD -->
+<div class="modal-overlay" id="pwdModal">
+  <div class="modal">
+    <h3>🔑 Changer le mot de passe</h3>
+    <label class="form-label">Nouveau mot de passe</label>
+    <input type="text" class="form-input" id="newPwd" placeholder="nouveau mot de passe"/>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closePwdModal()">Annuler</button>
+      <button class="btn-confirm" onclick="confirmPwd()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── ADMIN PASSWORD ────────────────────────────────────────────────────────
+// Change this password to your own!
+const ADMIN_PASSWORD = 'powercity2025';
+
+// ── STORAGE ───────────────────────────────────────────────────────────────
+function getClients(){ try{return JSON.parse(localStorage.getItem('ec_clients')||'{}')}catch{return{}} }
+function saveClients(c){ localStorage.setItem('ec_clients', JSON.stringify(c)) }
+
+// ── ADMIN AUTH ────────────────────────────────────────────────────────────
+function adminLogin(){
+  const pwd = document.getElementById('adminPwd').value;
+  if(pwd !== ADMIN_PASSWORD){
+    document.getElementById('adminError').classList.add('show'); return;
+  }
+  sessionStorage.setItem('ec_admin','1');
+  document.getElementById('adminLoginWrap').style.display='none';
+  document.getElementById('adminPanel').style.display='block';
+  renderClients();
+}
+function adminLogout(){
+  sessionStorage.removeItem('ec_admin');
+  location.reload();
+}
+// Auto-login if session exists
+if(sessionStorage.getItem('ec_admin')){
+  document.getElementById('adminLoginWrap').style.display='none';
+  document.getElementById('adminPanel').style.display='block';
+  setTimeout(renderClients, 50);
+}
+
+// ── ADD CLIENT ─────────────────────────────────────────────────────────────
+function addClient(){
+  const nom = document.getElementById('newNom').value.trim();
+  const societe = document.getElementById('newSociete').value.trim();
+  const username = document.getElementById('newUsername').value.trim().toLowerCase();
+  const password = document.getElementById('newPassword').value.trim();
+
+  if(!nom||!societe||!username||!password){ showToast('⚠ Remplissez tous les champs'); return; }
+  if(username.length < 3){ showToast('⚠ Identifiant trop court (min 3 caractères)'); return; }
+  if(password.length < 6){ showToast('⚠ Mot de passe trop court (min 6 caractères)'); return; }
+
+  const clients = getClients();
+  if(clients[username]){ showToast('⚠ Cet identifiant existe déjà'); return; }
+
+  clients[username] = {
+    nom, societe,
+    password: btoa(password), // simple encoding (not cryptographic)
+    actif: true,
+    createdAt: new Date().toISOString()
+  };
+  saveClients(clients);
+
+  // Clear fields
+  ['newNom','newSociete','newUsername','newPassword'].forEach(id=>document.getElementById(id).value='');
+  showToast(`✅ Client "${nom}" créé avec succès !`);
+  renderClients();
+}
+
+// ── TOGGLE CLIENT ──────────────────────────────────────────────────────────
+function toggleClient(username){
+  const clients = getClients();
+  clients[username].actif = !clients[username].actif;
+  saveClients(clients);
+  renderClients();
+  showToast(clients[username].actif ? '✅ Compte activé' : '🔴 Compte désactivé');
+}
+
+// ── DELETE CLIENT ──────────────────────────────────────────────────────────
+function deleteClient(username){
+  if(!confirm(`Supprimer définitivement le client "${username}" ?`)) return;
+  const clients = getClients();
+  delete clients[username];
+  saveClients(clients);
+  renderClients();
+  showToast('🗑 Client supprimé');
+}
+
+// ── RESET PASSWORD ─────────────────────────────────────────────────────────
+let pwdTarget = null;
+function openPwdModal(username){
+  pwdTarget = username;
+  document.getElementById('newPwd').value='';
+  document.getElementById('pwdModal').classList.add('open');
+}
+function closePwdModal(){ document.getElementById('pwdModal').classList.remove('open'); }
+function confirmPwd(){
+  const newPwd = document.getElementById('newPwd').value.trim();
+  if(!newPwd||newPwd.length<6){ showToast('⚠ Mot de passe trop court'); return; }
+  const clients = getClients();
+  clients[pwdTarget].password = btoa(newPwd);
+  saveClients(clients);
+  closePwdModal();
+  showToast(`🔑 Mot de passe de "${pwdTarget}" mis à jour`);
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function renderClients(){
+  const clients = getClients();
+  const entries = Object.entries(clients);
+  const now = new Date();
+  const thisMonth = now.getMonth();
+
+  // Stats
+  document.getElementById('statTotal').textContent = entries.length;
+  document.getElementById('statActif').textContent = entries.filter(([,c])=>c.actif).length;
+  document.getElementById('statInactif').textContent = entries.filter(([,c])=>!c.actif).length;
+  document.getElementById('statNew').textContent = entries.filter(([,c])=>{
+    const d = new Date(c.createdAt); return d.getMonth()===thisMonth && d.getFullYear()===now.getFullYear();
+  }).length;
+
+  const list = document.getElementById('clientsList');
+  if(!entries.length){
+    list.innerHTML='<div class="empty-table">Aucun client enregistré — ajoutez votre premier client ci-dessus</div>';
+    return;
+  }
+
+  list.innerHTML = entries.map(([username, c])=>{
+    const date = new Date(c.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+    return `<div class="client-row">
+      <div><div class="client-name">${c.nom}</div></div>
+      <div class="client-societe">${c.societe}</div>
+      <div class="client-user">${username}</div>
+      <div><span class="status-badge ${c.actif?'actif':'inactif'}">${c.actif?'● Actif':'● Inactif'}</span></div>
+      <div class="client-date">${date}</div>
+      <div class="row-actions">
+        <button class="btn-sm ${c.actif?'toggle-on':'toggle-off'}" onclick="toggleClient('${username}')">${c.actif?'Désact.':'Activer'}</button>
+        <button class="btn-sm pwd" onclick="openPwdModal('${username}')">🔑</button>
+        <button class="btn-sm del" onclick="deleteClient('${username}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+function showToast(msg){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');t.className='toast';t.innerHTML=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},2800);
+}
+</script>
+</body>
+</html>
