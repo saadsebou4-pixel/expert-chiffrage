@@ -141,17 +141,9 @@
 </div>
 
 <script>
-// ── CLIENTS DATABASE (stored in localStorage by admin) ─────────────────────
-// Format: { username: { password, nom, societe, actif } }
-
-function getClients(){
-  try{ return JSON.parse(localStorage.getItem('ec_clients')||'{}'); }
-  catch{ return {}; }
-}
-
 function handleKey(e){ if(e.key==='Enter') doLogin(); }
 
-function doLogin(){
+async function doLogin(){
   const username = document.getElementById('username').value.trim().toLowerCase();
   const password = document.getElementById('password').value;
   const btn = document.getElementById('loginBtn');
@@ -165,40 +157,39 @@ function doLogin(){
 
   btn.disabled = true;
   btn.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+  errorMsg.classList.remove('show');
 
-  setTimeout(()=>{
-    const clients = getClients();
-    const client = clients[username];
+  try {
+    const res = await fetch('/api/users', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'login', username, password })
+    });
+    const data = await res.json();
 
-    if(!client){
-      errorText.textContent = 'Identifiant inconnu.';
-      errorMsg.classList.add('show');
-      btn.disabled=false; btn.innerHTML='Se connecter'; return;
-    }
-    if(!client.actif){
-      errorText.textContent = 'Compte désactivé. Contactez PowerCity.';
-      errorMsg.classList.add('show');
-      btn.disabled=false; btn.innerHTML='Se connecter'; return;
-    }
-    // Support both plain and btoa encoded passwords
-    const pwdMatch = (client.password === password) || (client.password === btoa(password)) || (atob(client.password||'') === password);
-    if(!pwdMatch){
-      errorText.textContent = 'Mot de passe incorrect.';
+    if (!res.ok) {
+      errorText.textContent = data.error || 'Erreur de connexion.';
       errorMsg.classList.add('show');
       btn.disabled=false; btn.innerHTML='Se connecter'; return;
     }
 
-    // SUCCESS — save session
+    // SUCCESS
     localStorage.setItem('ec_session', JSON.stringify({
-      username, nom: client.nom, societe: client.societe,
+      username: data.user.username,
+      nom: data.user.nom,
+      societe: data.user.societe,
       loginAt: new Date().toISOString()
     }));
 
-    errorMsg.classList.remove('show');
     btn.innerHTML = '✓ Connexion réussie !';
     btn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
     setTimeout(()=>{ window.location.href = 'app.html'; }, 600);
-  }, 800);
+
+  } catch(err) {
+    errorText.textContent = 'Erreur réseau. Réessayez.';
+    errorMsg.classList.add('show');
+    btn.disabled=false; btn.innerHTML='Se connecter';
+  }
 }
 
 // Check if already logged in
