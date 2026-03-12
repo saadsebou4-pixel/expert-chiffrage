@@ -303,7 +303,7 @@
 
 <script>
 // ── SESSION CHECK ─────────────────────────────────────────────────────────
-const ec_session = sessionStorage.getItem('ec_session');
+const ec_session = localStorage.getItem('ec_session');
 if(!ec_session){ window.location.href = 'login.html'; }
 const ec_user = ec_session ? JSON.parse(ec_session) : {};
 
@@ -616,7 +616,7 @@ function showToast(msg,dur=2600){
 }
 
 function doLogout(){
-  sessionStorage.removeItem('ec_session');
+  localStorage.removeItem('ec_session');
   window.location.href = 'login.html';
 }
 

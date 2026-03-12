@@ -180,14 +180,16 @@ function doLogin(){
       errorMsg.classList.add('show');
       btn.disabled=false; btn.innerHTML='Se connecter'; return;
     }
-    if(client.password !== btoa(password)){
+    // Support both plain and btoa encoded passwords
+    const pwdMatch = (client.password === password) || (client.password === btoa(password)) || (atob(client.password||'') === password);
+    if(!pwdMatch){
       errorText.textContent = 'Mot de passe incorrect.';
       errorMsg.classList.add('show');
       btn.disabled=false; btn.innerHTML='Se connecter'; return;
     }
 
     // SUCCESS — save session
-    sessionStorage.setItem('ec_session', JSON.stringify({
+    localStorage.setItem('ec_session', JSON.stringify({
       username, nom: client.nom, societe: client.societe,
       loginAt: new Date().toISOString()
     }));
@@ -200,7 +202,7 @@ function doLogin(){
 }
 
 // Check if already logged in
-if(sessionStorage.getItem('ec_session')){
+if(localStorage.getItem('ec_session')){
   window.location.href = 'app.html';
 }
 </script>

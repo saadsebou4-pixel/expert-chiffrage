@@ -211,17 +211,17 @@ function adminLogin(){
   if(pwd !== ADMIN_PASSWORD){
     document.getElementById('adminError').classList.add('show'); return;
   }
-  sessionStorage.setItem('ec_admin','1');
+  localStorage.setItem('ec_admin','1');
   document.getElementById('adminLoginWrap').style.display='none';
   document.getElementById('adminPanel').style.display='block';
   renderClients();
 }
 function adminLogout(){
-  sessionStorage.removeItem('ec_admin');
+  localStorage.removeItem('ec_admin');
   location.reload();
 }
 // Auto-login if session exists
-if(sessionStorage.getItem('ec_admin')){
+if(localStorage.getItem('ec_admin')){
   document.getElementById('adminLoginWrap').style.display='none';
   document.getElementById('adminPanel').style.display='block';
   setTimeout(renderClients, 50);
@@ -243,7 +243,7 @@ function addClient(){
 
   clients[username] = {
     nom, societe,
-    password: btoa(password), // simple encoding (not cryptographic)
+    password: password, // stored as plain text
     actif: true,
     createdAt: new Date().toISOString()
   };
@@ -286,7 +286,7 @@ function confirmPwd(){
   const newPwd = document.getElementById('newPwd').value.trim();
   if(!newPwd||newPwd.length<6){ showToast('⚠ Mot de passe trop court'); return; }
   const clients = getClients();
-  clients[pwdTarget].password = btoa(newPwd);
+  clients[pwdTarget].password = newPwd;
   saveClients(clients);
   closePwdModal();
   showToast(`🔑 Mot de passe de "${pwdTarget}" mis à jour`);
