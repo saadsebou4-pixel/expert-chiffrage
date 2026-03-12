@@ -109,7 +109,7 @@
       </div>
     </div>
     <div class="al-title">Panneau administrateur</div>
-    <div class="al-sub">Accès réservé à PowerCity — Gestion des clients</div>
+    <div class="al-sub">Accès réservé à PowerCity — Pour ajouter un client, modifie le fichier <strong style="color:var(--green)">api/users.js</strong> sur GitHub</div>
     <div class="error-inline" id="adminError">Mot de passe administrateur incorrect.</div>
     <label class="form-label">Mot de passe admin</label>
     <input type="password" class="form-input" id="adminPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()"/>
@@ -142,16 +142,30 @@
     </div>
 
     <!-- ADD CLIENT -->
-    <div class="section-title">➕ Ajouter un client</div>
+    <div class="section-title">➕ Comment ajouter un client</div>
     <div class="add-card">
-      <div class="add-grid">
+      <div style="font-size:13px;color:var(--text);line-height:1.8;margin-bottom:16px">
+        Les comptes sont gérés dans le fichier <strong style="color:var(--green);font-family:'DM Mono',monospace">api/users.js</strong> sur GitHub.<br/>
+        C'est la méthode la plus fiable — fonctionne sur tous les appareils.
+      </div>
+      <div style="background:#0a0f0a;border:1px solid rgba(80,160,60,0.2);border-radius:10px;padding:16px;font-family:'DM Mono',monospace;font-size:12px;color:#8cc878;line-height:2;margin-bottom:16px">
+        <span style="color:#475569">// Dans api/users.js, ajoute ceci :</span><br/>
+        <span style="color:#50a03c">"ahmed.benali"</span>: {<br/>
+        &nbsp;&nbsp;nom: <span style="color:#f5c518">"Ahmed Benali"</span>,<br/>
+        &nbsp;&nbsp;societe: <span style="color:#f5c518">"Electro Maroc SARL"</span>,<br/>
+        &nbsp;&nbsp;password: <span style="color:#f5c518">"electro2025"</span>,<br/>
+        &nbsp;&nbsp;actif: <span style="color:#3b82f6">true</span><br/>
+        },
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
         <div>
-          <label class="form-label">Nom complet</label>
-          <input type="text" class="form-input" id="newNom" placeholder="Ahmed Benali"/>
+          <label class="form-label">Générer un nouveau client</label>
+          <input type="text" class="form-input" id="newNom" placeholder="Nom complet"/>
         </div>
         <div>
           <label class="form-label">Société</label>
-          <input type="text" class="form-input" id="newSociete" placeholder="Electro Maroc SARL"/>
+          <input type="text" class="form-input" id="newSociete" placeholder="Nom société"/>
         </div>
         <div>
           <label class="form-label">Identifiant</label>
@@ -161,9 +175,12 @@
           <label class="form-label">Mot de passe</label>
           <input type="text" class="form-input" id="newPassword" placeholder="motdepasse123"/>
         </div>
-        <button class="btn-add" onclick="addClient()">+ Créer</button>
       </div>
-      <div style="font-size:11px;color:#2d4a2d;margin-top:10px">⚠ Communiquez l'identifiant et le mot de passe au client par WhatsApp ou email.</div>
+      <button class="btn-green" onclick="generateCode()" style="margin-bottom:10px">⚡ Générer le code à copier</button>
+      <div id="generatedCode" style="display:none;background:#0a0f0a;border:1px solid rgba(80,160,60,0.3);border-radius:10px;padding:14px;font-family:'DM Mono',monospace;font-size:12px;color:#8cc878;line-height:2;position:relative">
+        <button onclick="copyCode()" style="position:absolute;top:10px;right:10px;background:rgba(80,160,60,0.15);border:1px solid rgba(80,160,60,0.3);color:var(--green);border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif">📋 Copier</button>
+        <div id="codeContent"></div>
+      </div>
     </div>
 
     <!-- CLIENTS LIST -->
@@ -228,6 +245,26 @@ if(localStorage.getItem('ec_admin')){
 }
 
 // ── ADD CLIENT ─────────────────────────────────────────────────────────────
+function generateCode(){
+  const nom = document.getElementById('newNom').value.trim();
+  const societe = document.getElementById('newSociete').value.trim();
+  const username = document.getElementById('newUsername').value.trim().toLowerCase();
+  const password = document.getElementById('newPassword').value.trim();
+  if(!nom||!societe||!username||!password){ showToast('⚠ Remplissez tous les champs'); return; }
+  const code = `"${username}": {
+  nom: "${nom}",
+  societe: "${societe}",
+  password: "${password}",
+  actif: true
+},`;
+  document.getElementById('codeContent').textContent = code;
+  document.getElementById('generatedCode').style.display='block';
+  showToast('✅ Copiez ce code dans api/users.js sur GitHub');
+}
+function copyCode(){
+  const text = document.getElementById('codeContent').textContent;
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Copié !'));
+}
 function addClient(){
   const nom = document.getElementById('newNom').value.trim();
   const societe = document.getElementById('newSociete').value.trim();
