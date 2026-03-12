@@ -14,8 +14,8 @@ const USERS = {
   }
   // Ajoute tes clients ici après la virgule :
   // "ahmed.benali": {
-  //   nom: "Ahmed Benali",
-  //   societe: "Electro Maroc SARL",
+  //   nom: "Anas Akkar ",
+  //   societe: "Panel Pro",
   //   password: "electro2025",
   //   actif: true
   // },
